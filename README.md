@@ -1,6 +1,7 @@
 # Performance of Scikit-learn parallelization
 This repository contains a script to evaluate the speed up of training Scikit-learn algorithms leveraging parallelization, mainly using the flag `n_jobs` from `joblib.parallel_backend`. The script `experiment.py` times the training of a given set of models with a dummy dataset using different numbers of logical processors and parallelization backends. The measured times are logged as well as plotted for a convenient analysis.
 
+## Getting started
 To run it in your machine, follow the next steps:
 
 1. Install dependencies using `pip install -r requirements.txt`.
