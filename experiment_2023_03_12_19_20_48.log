@@ -1,0 +1,54 @@
+2023-03-12 19:20:48,257 INFO     Read experiment configuration: {'n_jobs_to_test': [1, 2, 3], 'models': ['RandomForestClassifier', 'LogisticRegression'], 'parallelization_backends': ['threading'], 'n_samples': 1000, 'n_features': 1000, 'n_trials': 3, 'image_name_base': 'TrainingDurations', 'results_directory': 'Results'}
+2023-03-12 19:20:48,324 INFO     Created dummy dataset (1000 samples, 1000 dimensions) in 0.07 seconds
+2023-03-12 19:20:48,324 INFO     Found 4 logical processors
+2023-03-12 19:20:48,324 INFO     Selected model: RandomForestClassifier
+2023-03-12 19:20:48,324 INFO     Selected parallelization backend: threading
+2023-03-12 19:20:48,325 INFO     Initialized RandomForestClassifier
+2023-03-12 19:20:53,571 INFO     Trained with n_jobs=1: 5.24 seconds
+2023-03-12 19:20:53,571 INFO     Initialized RandomForestClassifier
+2023-03-12 19:20:58,356 INFO     Trained with n_jobs=1: 4.79 seconds
+2023-03-12 19:20:58,357 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:03,367 INFO     Trained with n_jobs=1: 5.01 seconds
+2023-03-12 19:21:03,368 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:06,115 INFO     Trained with n_jobs=2: 2.75 seconds
+2023-03-12 19:21:06,115 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:08,662 INFO     Trained with n_jobs=2: 2.55 seconds
+2023-03-12 19:21:08,662 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:11,234 INFO     Trained with n_jobs=2: 2.57 seconds
+2023-03-12 19:21:11,234 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:13,384 INFO     Trained with n_jobs=3: 2.15 seconds
+2023-03-12 19:21:13,385 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:15,393 INFO     Trained with n_jobs=3: 2.01 seconds
+2023-03-12 19:21:15,394 INFO     Initialized RandomForestClassifier
+2023-03-12 19:21:17,378 INFO     Trained with n_jobs=3: 1.98 seconds
+2023-03-12 19:21:17,378 INFO     Mean training durations with 3 trials: [5.01332267 2.62199974 2.04699787]
+2023-03-12 19:21:17,379 INFO     Variance of the training durations with 3 trials: [5.01332267 2.62199974 2.04699787]
+2023-03-12 19:21:18,027 INFO     Saved iteration results into TrainingDurations_1000x1000_RandomForestClassifier_threading.png
+2023-03-12 19:21:18,027 INFO     Selected model: LogisticRegression
+2023-03-12 19:21:18,027 INFO     Selected parallelization backend: threading
+2023-03-12 19:21:18,028 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,175 INFO     Trained with n_jobs=1: 0.15 seconds
+2023-03-12 19:21:18,175 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,298 INFO     Trained with n_jobs=1: 0.12 seconds
+2023-03-12 19:21:18,299 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,427 INFO     Trained with n_jobs=1: 0.13 seconds
+2023-03-12 19:21:18,427 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,563 INFO     Trained with n_jobs=2: 0.14 seconds
+2023-03-12 19:21:18,563 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,691 INFO     Trained with n_jobs=2: 0.13 seconds
+2023-03-12 19:21:18,691 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,820 INFO     Trained with n_jobs=2: 0.13 seconds
+2023-03-12 19:21:18,821 INFO     Initialized LogisticRegression
+2023-03-12 19:21:18,952 INFO     Trained with n_jobs=3: 0.13 seconds
+2023-03-12 19:21:18,953 INFO     Initialized LogisticRegression
+2023-03-12 19:21:19,084 INFO     Trained with n_jobs=3: 0.13 seconds
+2023-03-12 19:21:19,084 INFO     Initialized LogisticRegression
+2023-03-12 19:21:19,270 INFO     Trained with n_jobs=3: 0.19 seconds
+2023-03-12 19:21:19,271 INFO     Mean training durations with 3 trials: [0.13266834 0.13099869 0.14933276]
+2023-03-12 19:21:19,271 INFO     Variance of the training durations with 3 trials: [0.13266834 0.13099869 0.14933276]
+2023-03-12 19:21:19,503 INFO     Saved iteration results into TrainingDurations_1000x1000_LogisticRegression_threading.png
+2023-03-12 19:21:19,503 INFO     All mean training durations: [[5.013322671254476, 2.621999740600586, 2.046997865041097], [0.13266833623250326, 0.13099869092305502, 0.14933276176452637]]
+2023-03-12 19:21:19,503 INFO     All training durations variances: [[0.035266977770574054, 0.007916584016281073, 0.005408776558750913], [0.00010684531860584281, 1.2656252857191755e-05, 0.0006722559090045858]]
+2023-03-12 19:21:19,503 INFO     All iteration labels: ['RandomForestClassifier_threading', 'LogisticRegression_threading']
+2023-03-12 19:21:19,741 INFO     Saved overall results into TrainingDurations_1000x1000_OverallResults.png
+2023-03-12 19:21:19,741 INFO     Total wall time: 31.49 seconds

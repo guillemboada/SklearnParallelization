@@ -1,3 +1,4 @@
 .venv/
 *.log
+!experiment_2023_03_12_19_20_48.log
 Results/
