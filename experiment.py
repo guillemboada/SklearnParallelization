@@ -33,13 +33,14 @@ logging.basicConfig(
 with open('config.json', 'r') as f:
     config = json.load(f)
 
+n_jobs_to_test = config["n_jobs_to_test"]
 models = config["models"]
 parallelization_backends = config["parallelization_backends"]
 n_samples = config["n_samples"]
 n_features = config["n_features"]
 n_trials = config["n_trials"]
+results_directory = config["results_directory"]
 image_name_base = config["image_name_base"]
-n_jobs_to_test = config["n_jobs_to_test"]
 logging.info(f"Read experiment configuration variables: {config}.")
 
 # Generate dummy data
@@ -118,7 +119,10 @@ for selected_model in models:
         overall_plot_labels.append(iteration_parameters_string)
         image_name = f"{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
         script_path = pathlib.Path(__file__).parent.resolve()
-        plt.savefig(os.path.join(script_path, image_name))
+        results_path = os.path.join(script_path, results_directory)
+        if not os.path.exists(results_directory):
+            os.makedirs(results_directory)
+        plt.savefig(os.path.join(results_path, image_name))
         plt.clf()
         logging.info(f"Saved results into {image_name}.")
 
@@ -134,10 +138,9 @@ plt.xticks(n_jobs_to_test)
 plt.grid()
 image_name = f"{image_name_base}_{n_samples}x{n_features}_OverallResults.png"
 script_path = pathlib.Path(__file__).parent.resolve()
-plt.savefig(os.path.join(script_path, image_name), bbox_inches='tight')
+plt.savefig(os.path.join(results_path, image_name), bbox_inches='tight')
 plt.clf()
 logging.info(f"Saved results into {image_name}.")
-
 
 total_time = time.time() - start
 logging.info(f"Total wall time: {total_time:.2f} seconds.")
