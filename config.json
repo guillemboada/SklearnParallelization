@@ -1,0 +1,9 @@
+{
+    "n_jobs_to_test": [1, 3, 5, 10],
+    "models": ["RandomForestClassifier", "KNeighborsClassifier"],
+    "parallelization_backends": ["threading", "loky"],
+    "n_samples": 100,
+    "n_features": 100,
+    "n_trials": 1,
+    "image_name_base": "TrainingDurations"
+}
