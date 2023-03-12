@@ -3,6 +3,7 @@
 import os
 import time
 import json
+import datetime
 import logging
 import pathlib
 import numpy as np
@@ -22,11 +23,14 @@ import matplotlib.pyplot as plt
 start = time.time()
 
 # Set up logging configuration
+current_datetime_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+logfile_name = f"experiment_{current_datetime_string}.log"
 logging.basicConfig(
     level=logging.INFO,
     format="{asctime} {levelname:<8} {message}",
     style='{',
-    filename='experiment.log'
+    filename=logfile_name,
+    filemode='w'
 )
 
 # Read experiment configuration variables
