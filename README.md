@@ -5,7 +5,7 @@ To run it in your machine, follow the next steps:
 
 1. Install dependencies using `pip install -r requirements.txt`.
 2. Select your experiment configuration in `config.json`.
-    * List of number of logical processors to be tested, `"n_jobs_to_test": [1, 3, 5, 10]`.
+    * List of number of logical processors to be tested, `"n_jobs_to_test": [1, 3, 5, 10]`. To test each number of logical processors in your machine, input `"n_jobs_to_test": -1`.
     * Set of models, e.g., `"models": ["RandomForestClassifier", "KNeighborsClassifier", "LogisticRegression", "MLPClassifier", "SVC", "GaussianNB", "DecisionTreeClassifier", "SGDClassifier"]`.
     * Parallelization backends, e.g., `"parallelization_backends": ["threading", "loky"]`.
     * Dummy dataset size, e.g., `"n_samples": 100` and `"n_features": 100`.
