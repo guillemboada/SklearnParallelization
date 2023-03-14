@@ -33,22 +33,28 @@ n_samples = config["n_samples"]
 n_features = config["n_features"]
 n_trials = config["n_trials"]
 results_directory = config["results_directory"]
-logs_directory = config["logs_directory"]
 image_name_base = config["image_name_base"]
 
-# Set up logging configuration
-if not os.path.exists(logs_directory):
-    os.makedirs(logs_directory)
+# Create directory structure to save experiment outputs
+script_path = pathlib.Path(__file__).parent.resolve()
+all_results_path = os.path.join(script_path, results_directory)
+if not os.path.exists(results_directory):
+    os.makedirs(results_directory)
+
 current_datetime_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-logfile_name = f"experiment_{current_datetime_string}.log"
+experiment_results_directory = f"experiment_{current_datetime_string}"
+experiment_results_path = os.path.join(all_results_path, experiment_results_directory)
+os.makedirs(experiment_results_path)
+
+# Set up logging configuration
+logfile_name = f"{experiment_results_directory}.log"
 logging.basicConfig(
     level=logging.INFO,
     format="{asctime} {levelname:<8} {message}",
     style='{',
-    filename=os.path.join(logs_directory, logfile_name),
+    filename=os.path.join(experiment_results_path, logfile_name),
     filemode='w'
 )
-
 logging.info(f"Read experiment configuration: {config}")
 
 # Generate dummy data
@@ -127,11 +133,7 @@ for selected_model in models:
         plt.ylim([0, 1.1 * max(training_times_means)])
         plt.grid()
         image_name = f"{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
-        script_path = pathlib.Path(__file__).parent.resolve()
-        results_path = os.path.join(script_path, results_directory)
-        if not os.path.exists(results_directory):
-            os.makedirs(results_directory)
-        plt.savefig(os.path.join(results_path, image_name))
+        plt.savefig(os.path.join(experiment_results_path, image_name))
         plt.clf()
 
         # Plot and save iteration results in percentual duration
@@ -145,9 +147,7 @@ for selected_model in models:
         plt.ylim([0, 1.1 * 100])
         plt.grid()
         percentual_image_name = f"Percentual{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
-        script_path = pathlib.Path(__file__).parent.resolve()
-        results_path = os.path.join(script_path, results_directory)
-        plt.savefig(os.path.join(results_path, percentual_image_name))
+        plt.savefig(os.path.join(experiment_results_path, percentual_image_name))
         plt.clf()
         
         logging.info(f"Saved iteration results into {image_name} and {percentual_image_name}")
@@ -165,7 +165,7 @@ plt.legend(overall_plot_labels, bbox_to_anchor=(1.05, 1.0), loc='upper left')
 plt.xticks(n_jobs_to_test)
 plt.grid()
 image_name = f"{image_name_base}_{n_samples}x{n_features}_OverallResults.png"
-plt.savefig(os.path.join(results_path, image_name), bbox_inches='tight')
+plt.savefig(os.path.join(experiment_results_path, image_name), bbox_inches='tight')
 plt.clf()
 logging.info(f"Saved overall results into {image_name}")
 
