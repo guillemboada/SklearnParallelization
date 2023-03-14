@@ -22,17 +22,6 @@ import matplotlib.pyplot as plt
 
 start = time.time()
 
-# Set up logging configuration
-current_datetime_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-logfile_name = f"experiment_{current_datetime_string}.log"
-logging.basicConfig(
-    level=logging.INFO,
-    format="{asctime} {levelname:<8} {message}",
-    style='{',
-    filename=logfile_name,
-    filemode='w'
-)
-
 # Read experiment configuration
 with open('config.json', 'r') as f:
     config = json.load(f)
@@ -44,7 +33,22 @@ n_samples = config["n_samples"]
 n_features = config["n_features"]
 n_trials = config["n_trials"]
 results_directory = config["results_directory"]
+logs_directory = config["logs_directory"]
 image_name_base = config["image_name_base"]
+
+# Set up logging configuration
+if not os.path.exists(logs_directory):
+    os.makedirs(logs_directory)
+current_datetime_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+logfile_name = f"experiment_{current_datetime_string}.log"
+logging.basicConfig(
+    level=logging.INFO,
+    format="{asctime} {levelname:<8} {message}",
+    style='{',
+    filename=os.path.join(logs_directory, logfile_name),
+    filemode='w'
+)
+
 logging.info(f"Read experiment configuration: {config}")
 
 # Generate dummy data
