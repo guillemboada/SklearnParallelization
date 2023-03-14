@@ -111,14 +111,17 @@ for selected_model in models:
         logging.info(f"Mean training durations with {n_trials} trials: {training_times_means}")
         logging.info(f"Variance of the training durations with {n_trials} trials: {training_times_means}")
 
-        # Plot and save iteration results 
+        # Plot and save iteration results in absolute duration
+        iteration_parameters_string = f"{selected_model}_{selected_parallelization_backend}"
+        overall_plot_labels.append(iteration_parameters_string)
+        plt.figure(1)    
         plt.errorbar(n_jobs_to_test, training_times_means, training_times_variances)
         plt.xlabel("n_jobs (number of logical processors)")
         plt.ylabel("Training time (seconds)")
+        plt.title(iteration_parameters_string)
         plt.xticks(n_jobs_to_test)
+        plt.ylim([0, 1.1 * max(training_times_means)])
         plt.grid()
-        iteration_parameters_string = f"{selected_model}_{selected_parallelization_backend}"
-        overall_plot_labels.append(iteration_parameters_string)
         image_name = f"{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
         script_path = pathlib.Path(__file__).parent.resolve()
         results_path = os.path.join(script_path, results_directory)
@@ -126,12 +129,31 @@ for selected_model in models:
             os.makedirs(results_directory)
         plt.savefig(os.path.join(results_path, image_name))
         plt.clf()
-        logging.info(f"Saved iteration results into {image_name}")
 
-# Plot and save overall results
+        # Plot and save iteration results in percentual duration
+        normalized_training_times_means = (np.array(training_times_means) / max(training_times_means)) * 100
+        plt.figure(2)
+        plt.plot(n_jobs_to_test, normalized_training_times_means)
+        plt.xlabel("n_jobs (number of logical processors)")
+        plt.ylabel("Normalized training time (%)")
+        plt.title(iteration_parameters_string)
+        plt.xticks(n_jobs_to_test)
+        plt.ylim([0, 1.1 * 100])
+        plt.grid()
+        percentual_image_name = f"Percentual{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
+        script_path = pathlib.Path(__file__).parent.resolve()
+        results_path = os.path.join(script_path, results_directory)
+        plt.savefig(os.path.join(results_path, percentual_image_name))
+        plt.clf()
+        
+        logging.info(f"Saved iteration results into {image_name} and {percentual_image_name}")
+
 logging.info(f"All mean training durations: {all_training_times_means}")
 logging.info(f"All training durations variances: {all_training_times_variances}")
 logging.info(f"All iteration labels: {overall_plot_labels}")
+
+# Plot and save overall results
+plt.figure(1)
 plt.plot(n_jobs_to_test, np.transpose(np.array(all_training_times_means)))
 plt.xlabel("n_jobs (number of logical processors)")
 plt.ylabel("Training time (seconds)")
@@ -139,7 +161,6 @@ plt.legend(overall_plot_labels, bbox_to_anchor=(1.05, 1.0), loc='upper left')
 plt.xticks(n_jobs_to_test)
 plt.grid()
 image_name = f"{image_name_base}_{n_samples}x{n_features}_OverallResults.png"
-script_path = pathlib.Path(__file__).parent.resolve()
 plt.savefig(os.path.join(results_path, image_name), bbox_inches='tight')
 plt.clf()
 logging.info(f"Saved overall results into {image_name}")
