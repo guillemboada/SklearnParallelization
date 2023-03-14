@@ -136,15 +136,15 @@ for selected_model in models:
         plt.savefig(os.path.join(experiment_results_path, image_name))
         plt.clf()
 
-        # Plot and save iteration results in percentual duration
-        normalized_training_times_means = (np.array(training_times_means) / max(training_times_means)) * 100
+        # Plot and save iteration results in percentual duration normalized to n_jobs=1
+        normalized_training_times_means = (np.array(training_times_means) / training_times_means[0]) * 100
         plt.figure(2)
         plt.plot(n_jobs_to_test, normalized_training_times_means)
         plt.xlabel("n_jobs (number of logical processors)")
         plt.ylabel("Normalized training time (%)")
         plt.title(iteration_parameters_string)
         plt.xticks(n_jobs_to_test)
-        plt.ylim([0, 1.1 * 100])
+        plt.ylim([0, 1.1 * max(normalized_training_times_means)])
         plt.grid()
         percentual_image_name = f"Percentual{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
         plt.savefig(os.path.join(experiment_results_path, percentual_image_name))
