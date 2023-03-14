@@ -59,7 +59,7 @@ logging.info(f"Read experiment configuration: {config}")
 
 # Generate dummy data
 data_generation_start = time.time()
-X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=2, cluster_std=100, random_state=0)
+X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=20, cluster_std=100, random_state=0)
 data_generation_time = time.time() - data_generation_start
 logging.info(f"Created dummy dataset ({n_samples} samples, {n_features} dimensions) in {data_generation_time:.2f} seconds")
 
@@ -91,7 +91,7 @@ for selected_model in models:
                     case "KNeighborsClassifier":
                         model = KNeighborsClassifier()
                     case "LogisticRegression":
-                        model = LogisticRegression()
+                        model = LogisticRegression(multi_class="ovr", solver="sag")
                     case "MLPClassifier":
                         model = MLPClassifier()
                     case "SVC":
