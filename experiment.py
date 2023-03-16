@@ -117,6 +117,35 @@ def compute_duration_statistics(training_times):
     return training_times_means, training_times_variances
 
 
+def plot_absolute_durations(n_jobs_to_test, training_times_means, training_times_variances, iteration_name, saving_path):
+    plt.errorbar(n_jobs_to_test, training_times_means, training_times_variances)
+    plt.xlabel("n_jobs (number of logical processors)")
+    plt.ylabel("Training time (seconds)")
+    plt.title(iteration_name)
+    plt.xticks(n_jobs_to_test)
+    plt.ylim([0, 1.1 * max(training_times_means)])
+    plt.grid()
+    plot_name = f"AbsoluteTrainingDurations_{iteration_name}.png"
+    plt.savefig(os.path.join(saving_path, plot_name))
+    logging.info(f"Saved iteration results into {plot_name}")
+    plt.clf()
+
+    
+def plot_percentual_durations(n_jobs_to_test, training_times_means, training_times_variances, iteration_name, saving_path):
+    normalized_training_times_means = (np.array(training_times_means) / training_times_means[0]) * 100
+    plt.plot(n_jobs_to_test, normalized_training_times_means)
+    plt.xlabel("n_jobs (number of logical processors)")
+    plt.ylabel("Normalized training time (%)")
+    plt.title(iteration_name)
+    plt.xticks(n_jobs_to_test)
+    plt.ylim([0, 1.1 * max(normalized_training_times_means)])
+    plt.grid()
+    plot_name = f"PercentualTrainingDurations__{iteration_name}.png"
+    plt.savefig(os.path.join(saving_path, plot_name))
+    logging.info(f"Saved iteration results into {plot_name}")
+    plt.clf()
+
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -166,36 +195,11 @@ if __name__ == "__main__":
             all_training_times_means.append(list(training_times_means))
             all_training_times_variances.append(list(training_times_variances))
 
-            # Plot and save iteration results in absolute duration
-            iteration_parameters_string = f"{selected_model}_{selected_parallelization_backend}"
-            overall_plot_labels.append(iteration_parameters_string)
-            plt.figure(1)    
-            plt.errorbar(n_jobs_to_test, training_times_means, training_times_variances)
-            plt.xlabel("n_jobs (number of logical processors)")
-            plt.ylabel("Training time (seconds)")
-            plt.title(iteration_parameters_string)
-            plt.xticks(n_jobs_to_test)
-            plt.ylim([0, 1.1 * max(training_times_means)])
-            plt.grid()
-            image_name = f"{config.image_name_base}_{config.n_samples}x{config.n_features}_{iteration_parameters_string}.png"
-            plt.savefig(os.path.join(experiment_results_path, image_name))
-            plt.clf()
-
-            # Plot and save iteration results in percentual duration normalized to n_jobs=1
-            normalized_training_times_means = (np.array(training_times_means) / training_times_means[0]) * 100
-            plt.figure(2)
-            plt.plot(n_jobs_to_test, normalized_training_times_means)
-            plt.xlabel("n_jobs (number of logical processors)")
-            plt.ylabel("Normalized training time (%)")
-            plt.title(iteration_parameters_string)
-            plt.xticks(n_jobs_to_test)
-            plt.ylim([0, 1.1 * max(normalized_training_times_means)])
-            plt.grid()
-            percentual_image_name = f"Percentual{config.image_name_base}_{config.n_samples}x{config.n_features}_{iteration_parameters_string}.png"
-            plt.savefig(os.path.join(experiment_results_path, percentual_image_name))
-            plt.clf()
-            
-            logging.info(f"Saved iteration results into {image_name} and {percentual_image_name}")
+            # Plot and save iteration results in absolute and percentual durations
+            iteration_name = f"{selected_model}_{selected_parallelization_backend}"
+            overall_plot_labels.append(iteration_name)
+            plot_absolute_durations(n_jobs_to_test, training_times_means, training_times_variances, iteration_name, experiment_results_path)
+            plot_percentual_durations(n_jobs_to_test, training_times_means, training_times_variances, iteration_name, experiment_results_path)
 
     logging.info(f"All mean training durations: {all_training_times_means}")
     logging.info(f"All training durations variances: {all_training_times_variances}")
