@@ -35,18 +35,18 @@ if __name__ == "__main__":
 
     start = time.time()
 
-    # Read experiment configuration
+    # Read configuration
     with open('config.json', 'r') as f:
         config = json.load(f, object_hook=lambda d: Config(**d))
 
-    # Create directory structure to save experiment outputs
+    # Create directory structure to save outputs
     script_path = pathlib.Path(__file__).parent.resolve()
     all_results_path = os.path.join(script_path, config.results_directory)
     if not os.path.exists(config.results_directory):
         os.makedirs(config.results_directory)
 
-    current_datetime_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    experiment_results_directory = f"experiment_{current_datetime_string}"
+    current_datetime_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    experiment_results_directory = f"{current_datetime_string}_{config.n_samples}x{config.n_features}"
     experiment_results_path = os.path.join(all_results_path, experiment_results_directory)
     os.makedirs(experiment_results_path)
 
