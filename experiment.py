@@ -57,6 +57,20 @@ def generate_dummy_data(n_samples, n_features):
 
     return X, y
 
+
+def validate_n_jobs_to_test(n_jobs_to_test):
+    n_cpu = os.cpu_count()
+    logging.info(f"Found {n_cpu} logical processors")
+    if n_jobs_to_test != -1:
+        if max(n_jobs_to_test) > n_cpu:
+            raise ValueError(f"Found {n_cpu} logical processors, but intended to use {max(n_jobs_to_test)}")
+    else:
+        n_jobs_to_test = list(range(1, n_cpu))
+        logging.info(f"N_JOBS_TO_TEST = -1. All n_jobs up to one minus the number of available logical processors will be tested: {n_jobs_to_test}")
+
+    return n_jobs_to_test
+
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -84,16 +98,8 @@ if __name__ == "__main__":
     # Generate dummy data
     X, y = generate_dummy_data(config.n_samples, config.n_features)
 
-    # Train with different number of logical processors (n_jobs)
-    n_cpu = os.cpu_count()
-    logging.info(f"Found {n_cpu} logical processors")
-    if config.n_jobs_to_test != -1:
-        n_jobs_to_test = config.n_jobs_to_test
-        if max(n_jobs_to_test) > n_cpu:
-            raise ValueError(f"Found {n_cpu} logical processors, but intended to use {max(n_jobs_to_test)}")
-    else:
-        n_jobs_to_test = list(range(1, n_cpu))
-        logging.info(f"N_JOBS_TO_TEST = -1. All n_jobs up to one minus the number of available logical processors will be tested: {n_jobs_to_test}")
+    # Train with different number of logical processors (n_jobs)  
+    n_jobs_to_test = validate_n_jobs_to_test(config.n_jobs_to_test)
 
     all_training_times_means = []
     all_training_times_variances = []
