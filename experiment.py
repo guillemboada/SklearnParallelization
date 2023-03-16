@@ -31,6 +31,24 @@ class Config():
         self.image_name_base = image_name_base
 
 
+def create_results_directory(results_directory):
+    script_path = pathlib.Path(__file__).parent.resolve()
+    results_path = os.path.join(script_path, results_directory)
+    if not os.path.exists(results_directory):
+        os.makedirs(results_directory)
+
+    return results_path
+
+
+def create_experiment_results_directory(results_path):
+    current_datetime_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
+    experiment_results_directory = f"{current_datetime_string}_{config.n_samples}x{config.n_features}"
+    experiment_results_path = os.path.join(results_path, experiment_results_directory)
+    os.makedirs(experiment_results_path)
+
+    return experiment_results_path
+
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -39,18 +57,12 @@ if __name__ == "__main__":
     with open('config.json', 'r') as f:
         config = json.load(f, object_hook=lambda d: Config(**d))
 
-    # Create directory structure to save outputs
-    script_path = pathlib.Path(__file__).parent.resolve()
-    all_results_path = os.path.join(script_path, config.results_directory)
-    if not os.path.exists(config.results_directory):
-        os.makedirs(config.results_directory)
-
-    current_datetime_string = datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")
-    experiment_results_directory = f"{current_datetime_string}_{config.n_samples}x{config.n_features}"
-    experiment_results_path = os.path.join(all_results_path, experiment_results_directory)
-    os.makedirs(experiment_results_path)
+    # Create results directory structure
+    results_path = create_results_directory(config.results_directory)
+    experiment_results_path = create_experiment_results_directory(results_path)
 
     # Set up logging configuration
+    experiment_results_directory = os.path.basename(experiment_results_path)
     logfile_name = f"{experiment_results_directory}.log"
     logging.basicConfig(
         level=logging.INFO,
