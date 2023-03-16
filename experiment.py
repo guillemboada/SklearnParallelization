@@ -19,28 +19,31 @@ from sklearn.linear_model import SGDClassifier
 import joblib
 import matplotlib.pyplot as plt
 
+class Config():
+    def __init__(self, n_jobs_to_test, models, parallelization_backends, n_samples, n_features, n_trials, results_directory, image_name_base):
+        self.n_jobs_to_test = n_jobs_to_test
+        self.models = models
+        self.parallelization_backends = parallelization_backends
+        self.n_samples = n_samples
+        self.n_features = n_features
+        self.n_trials = n_trials
+        self.results_directory = results_directory
+        self.image_name_base = image_name_base
+
+
 if __name__ == "__main__": 
 
     start = time.time()
 
     # Read experiment configuration
     with open('config.json', 'r') as f:
-        config = json.load(f)
-
-    n_jobs_to_test = config["n_jobs_to_test"]
-    models = config["models"]
-    parallelization_backends = config["parallelization_backends"]
-    n_samples = config["n_samples"]
-    n_features = config["n_features"]
-    n_trials = config["n_trials"]
-    results_directory = config["results_directory"]
-    image_name_base = config["image_name_base"]
+        config = json.load(f, object_hook=lambda d: Config(**d))
 
     # Create directory structure to save experiment outputs
     script_path = pathlib.Path(__file__).parent.resolve()
-    all_results_path = os.path.join(script_path, results_directory)
-    if not os.path.exists(results_directory):
-        os.makedirs(results_directory)
+    all_results_path = os.path.join(script_path, config.results_directory)
+    if not os.path.exists(config.results_directory):
+        os.makedirs(config.results_directory)
 
     current_datetime_string = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     experiment_results_directory = f"experiment_{current_datetime_string}"
@@ -60,15 +63,15 @@ if __name__ == "__main__":
 
     # Generate dummy data
     data_generation_start = time.time()
-    X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=20, cluster_std=100, random_state=0)
+    X, y = make_blobs(n_samples=config.n_samples, n_features=config.n_features, centers=20, cluster_std=100, random_state=0)
     data_generation_time = time.time() - data_generation_start
-    logging.info(f"Created dummy dataset ({n_samples} samples, {n_features} dimensions) in {data_generation_time:.2f} seconds")
+    logging.info(f"Created dummy dataset ({config.n_samples} samples, {config.n_features} dimensions) in {data_generation_time:.2f} seconds")
 
     # Train with different number of logical processors (n_jobs)
     n_cpu = os.cpu_count()
     logging.info(f"Found {n_cpu} logical processors")
-    if n_jobs_to_test != -1:
-        n_jobs_to_test = n_jobs_to_test
+    if config.n_jobs_to_test != -1:
+        n_jobs_to_test = config.n_jobs_to_test
         if max(n_jobs_to_test) > n_cpu:
             raise ValueError(f"Found {n_cpu} logical processors, but intended to use {max(n_jobs_to_test)}")
     else:
@@ -78,13 +81,13 @@ if __name__ == "__main__":
     all_training_times_means = []
     all_training_times_variances = []
     overall_plot_labels = []
-    for selected_model in models:
+    for selected_model in config.models:
         logging.info(f"Selected model: {selected_model}")
-        for selected_parallelization_backend in parallelization_backends:
+        for selected_parallelization_backend in config.parallelization_backends:
             logging.info(f"Selected parallelization backend: {selected_parallelization_backend}")
-            training_times = np.zeros((len(n_jobs_to_test), n_trials))
+            training_times = np.zeros((len(n_jobs_to_test), config.n_trials))
             for i, iteration_n_jobs in enumerate(n_jobs_to_test):
-                for n in range(n_trials):
+                for n in range(config.n_trials):
                     
                     match selected_model:
                         case "RandomForestClassifier":
@@ -121,8 +124,8 @@ if __name__ == "__main__":
             training_times_variances = np.var(training_times, axis=-1)
             all_training_times_means.append(list(training_times_means))
             all_training_times_variances.append(list(training_times_variances))
-            logging.info(f"Mean training durations with {n_trials} trials: {training_times_means}")
-            logging.info(f"Variance of the training durations with {n_trials} trials: {training_times_means}")
+            logging.info(f"Mean training durations with {config.n_trials} trials: {training_times_means}")
+            logging.info(f"Variance of the training durations with {config.n_trials} trials: {training_times_means}")
 
             # Plot and save iteration results in absolute duration
             iteration_parameters_string = f"{selected_model}_{selected_parallelization_backend}"
@@ -135,7 +138,7 @@ if __name__ == "__main__":
             plt.xticks(n_jobs_to_test)
             plt.ylim([0, 1.1 * max(training_times_means)])
             plt.grid()
-            image_name = f"{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
+            image_name = f"{config.image_name_base}_{config.n_samples}x{config.n_features}_{iteration_parameters_string}.png"
             plt.savefig(os.path.join(experiment_results_path, image_name))
             plt.clf()
 
@@ -149,7 +152,7 @@ if __name__ == "__main__":
             plt.xticks(n_jobs_to_test)
             plt.ylim([0, 1.1 * max(normalized_training_times_means)])
             plt.grid()
-            percentual_image_name = f"Percentual{image_name_base}_{n_samples}x{n_features}_{iteration_parameters_string}.png"
+            percentual_image_name = f"Percentual{config.image_name_base}_{config.n_samples}x{config.n_features}_{iteration_parameters_string}.png"
             plt.savefig(os.path.join(experiment_results_path, percentual_image_name))
             plt.clf()
             
@@ -167,7 +170,7 @@ if __name__ == "__main__":
     plt.legend(overall_plot_labels, bbox_to_anchor=(1.05, 1.0), loc='upper left')
     plt.xticks(n_jobs_to_test)
     plt.grid()
-    image_name = f"{image_name_base}_{n_samples}x{n_features}_OverallResults.png"
+    image_name = f"{config.image_name_base}_{config.n_samples}x{config.n_features}_OverallResults.png"
     plt.savefig(os.path.join(experiment_results_path, image_name), bbox_inches='tight')
     plt.clf()
     logging.info(f"Saved overall results into {image_name}")
