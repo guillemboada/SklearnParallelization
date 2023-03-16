@@ -108,6 +108,15 @@ def train_model(model):
     return training_time
 
 
+def compute_duration_statistics(training_times):
+    training_times_means = np.mean(training_times, axis=-1)
+    training_times_variances = np.var(training_times, axis=-1)
+    logging.info(f"Mean training durations with {config.n_trials} trials: {training_times_means}")
+    logging.info(f"Variance of the training durations with {config.n_trials} trials: {training_times_means}")
+
+    return training_times_means, training_times_variances
+
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -145,22 +154,17 @@ if __name__ == "__main__":
         logging.info(f"Selected model: {selected_model}")
         for selected_parallelization_backend in config.parallelization_backends:
             logging.info(f"Selected parallelization backend: {selected_parallelization_backend}")
-
             training_times = np.zeros((len(n_jobs_to_test), config.n_trials))
             for i, iteration_n_jobs in enumerate(n_jobs_to_test):
                 for n in range(config.n_trials):
-
                     model = initialize_model(selected_model)                   
                     training_time = train_model(model)
                     training_times[i, n] = training_time
 
-            # Compute mean and variance
-            training_times_means = np.mean(training_times, axis=-1)
-            training_times_variances = np.var(training_times, axis=-1)
+            # Compute duration statistics (mean and variance)
+            training_times_means, training_times_variances = compute_duration_statistics(training_times)
             all_training_times_means.append(list(training_times_means))
             all_training_times_variances.append(list(training_times_variances))
-            logging.info(f"Mean training durations with {config.n_trials} trials: {training_times_means}")
-            logging.info(f"Variance of the training durations with {config.n_trials} trials: {training_times_means}")
 
             # Plot and save iteration results in absolute duration
             iteration_parameters_string = f"{selected_model}_{selected_parallelization_backend}"
