@@ -71,6 +71,33 @@ def validate_n_jobs_to_test(n_jobs_to_test):
     return n_jobs_to_test
 
 
+def initialize_model(selected_model):
+    match selected_model:
+        case "RandomForestClassifier":
+            model = RandomForestClassifier()
+        case "KNeighborsClassifier":
+            model = KNeighborsClassifier()
+        case "DefaultLogisticRegression":
+            model = LogisticRegression()                    
+        case "SagaLogisticRegression":
+            model = LogisticRegression(multi_class="ovr", solver="saga")
+        case "MLPClassifier":
+            model = MLPClassifier()
+        case "SVC":
+            model = SVC() 
+        case "GaussianNB":
+            model = GaussianNB()
+        case "DecisionTreeClassifier":
+            model = DecisionTreeClassifier()
+        case "SGDClassifier":
+            model = SGDClassifier()
+        case _:
+            raise NotImplementedError(f"Model {selected_model} is not available.")
+    logging.info(f"Initialized {selected_model}")
+
+    return model
+
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -108,33 +135,12 @@ if __name__ == "__main__":
         logging.info(f"Selected model: {selected_model}")
         for selected_parallelization_backend in config.parallelization_backends:
             logging.info(f"Selected parallelization backend: {selected_parallelization_backend}")
+
             training_times = np.zeros((len(n_jobs_to_test), config.n_trials))
             for i, iteration_n_jobs in enumerate(n_jobs_to_test):
                 for n in range(config.n_trials):
-                    
-                    match selected_model:
-                        case "RandomForestClassifier":
-                            model = RandomForestClassifier()
-                        case "KNeighborsClassifier":
-                            model = KNeighborsClassifier()
-                        case "DefaultLogisticRegression":
-                            model = LogisticRegression()                    
-                        case "SagaLogisticRegression":
-                            model = LogisticRegression(multi_class="ovr", solver="saga")
-                        case "MLPClassifier":
-                            model = MLPClassifier()
-                        case "SVC":
-                            model = SVC() 
-                        case "GaussianNB":
-                            model = GaussianNB()
-                        case "DecisionTreeClassifier":
-                            model = DecisionTreeClassifier()
-                        case "SGDClassifier":
-                            model = SGDClassifier()
-                        case _:
-                            raise NotImplementedError(f"Model {selected_model} is not available.")
-                    logging.info(f"Initialized {selected_model}")
 
+                    model = initialize_model(selected_model)
                     training_start = time.time()
                     with joblib.parallel_backend(selected_parallelization_backend, n_jobs=iteration_n_jobs):
                         model.fit(X, y)
