@@ -49,6 +49,14 @@ def create_experiment_results_directory(results_path):
     return experiment_results_path
 
 
+def generate_dummy_data(n_samples, n_features):
+    data_generation_start = time.time()
+    X, y = make_blobs(n_samples=n_samples, n_features=n_features, centers=20, cluster_std=100, random_state=0)
+    data_generation_time = time.time() - data_generation_start
+    logging.info(f"Created dummy dataset ({n_samples} samples, {n_features} dimensions) in {data_generation_time:.2f} seconds")
+
+    return X, y
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -74,10 +82,7 @@ if __name__ == "__main__":
     logging.info(f"Read experiment configuration: {config}")
 
     # Generate dummy data
-    data_generation_start = time.time()
-    X, y = make_blobs(n_samples=config.n_samples, n_features=config.n_features, centers=20, cluster_std=100, random_state=0)
-    data_generation_time = time.time() - data_generation_start
-    logging.info(f"Created dummy dataset ({config.n_samples} samples, {config.n_features} dimensions) in {data_generation_time:.2f} seconds")
+    X, y = generate_dummy_data(config.n_samples, config.n_features)
 
     # Train with different number of logical processors (n_jobs)
     n_cpu = os.cpu_count()
