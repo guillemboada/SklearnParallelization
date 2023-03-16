@@ -98,6 +98,16 @@ def initialize_model(selected_model):
     return model
 
 
+def train_model(model):
+    training_start = time.time()
+    with joblib.parallel_backend(selected_parallelization_backend, n_jobs=iteration_n_jobs):
+        model.fit(X, y)
+    training_time = time.time() - training_start
+    logging.info(f"Trained with n_jobs={iteration_n_jobs}: {training_time:.2f} seconds")
+
+    return training_time
+
+
 if __name__ == "__main__": 
 
     start = time.time()
@@ -140,13 +150,9 @@ if __name__ == "__main__":
             for i, iteration_n_jobs in enumerate(n_jobs_to_test):
                 for n in range(config.n_trials):
 
-                    model = initialize_model(selected_model)
-                    training_start = time.time()
-                    with joblib.parallel_backend(selected_parallelization_backend, n_jobs=iteration_n_jobs):
-                        model.fit(X, y)
-                    training_time = time.time() - training_start
+                    model = initialize_model(selected_model)                   
+                    training_time = train_model(model)
                     training_times[i, n] = training_time
-                    logging.info(f"Trained with n_jobs={iteration_n_jobs}: {training_time:.2f} seconds")
 
             # Compute mean and variance
             training_times_means = np.mean(training_times, axis=-1)
