@@ -98,12 +98,24 @@ def initialize_model(selected_model):
     return model
 
 
-def train_model(model):
+def train_with_multiple_n_jobs(n_jobs_to_test, n_trials):
+
+    training_times = np.zeros((len(n_jobs_to_test), n_trials))
+    for i, n_jobs in enumerate(n_jobs_to_test):
+        for n in range(config.n_trials):
+            model = initialize_model(selected_model)
+            training_time = train_model(model, n_jobs)
+            training_times[i, n] = training_time
+
+    return training_times
+
+
+def train_model(model, n_jobs):
     training_start = time.time()
-    with joblib.parallel_backend(selected_parallelization_backend, n_jobs=iteration_n_jobs):
+    with joblib.parallel_backend(selected_parallelization_backend, n_jobs=n_jobs):
         model.fit(X, y)
     training_time = time.time() - training_start
-    logging.info(f"Trained with n_jobs={iteration_n_jobs}: {training_time:.2f} seconds")
+    logging.info(f"Trained with n_jobs={n_jobs}: {training_time:.2f} seconds")
 
     return training_time
 
@@ -183,12 +195,9 @@ if __name__ == "__main__":
         logging.info(f"Selected model: {selected_model}")
         for selected_parallelization_backend in config.parallelization_backends:
             logging.info(f"Selected parallelization backend: {selected_parallelization_backend}")
-            training_times = np.zeros((len(n_jobs_to_test), config.n_trials))
-            for i, iteration_n_jobs in enumerate(n_jobs_to_test):
-                for n in range(config.n_trials):
-                    model = initialize_model(selected_model)                   
-                    training_time = train_model(model)
-                    training_times[i, n] = training_time
+         
+            # Train with multiple n_jobs
+            training_times = train_with_multiple_n_jobs(n_jobs_to_test, config.n_trials)
 
             # Compute duration statistics (mean and variance)
             training_times_means, training_times_variances = compute_duration_statistics(training_times)
