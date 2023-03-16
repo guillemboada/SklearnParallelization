@@ -90,8 +90,10 @@ for selected_model in models:
                         model = RandomForestClassifier()
                     case "KNeighborsClassifier":
                         model = KNeighborsClassifier()
-                    case "LogisticRegression":
-                        model = LogisticRegression(multi_class="ovr", solver="sag")
+                    case "DefaultLogisticRegression":
+                        model = LogisticRegression()                    
+                    case "SagaLogisticRegression":
+                        model = LogisticRegression(multi_class="ovr", solver="saga")
                     case "MLPClassifier":
                         model = MLPClassifier()
                     case "SVC":
